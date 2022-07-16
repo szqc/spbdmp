@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="spb.crm.mapper.CustomerMapper">
+
+    <cache eviction="LRU" flushInterval="100000" readOnly="true" size="1024"></cache>
+    <resultMap id="resultMap" type="spb.crm.domain.Customer">
+        <id column="id" property="id"></id>
+        <result column="cust_no" property="custNo"></result>
+        <result column="cust_name" property="custName"></result>
+        <result column="cust_level" property="custLevel"></result>
+    </resultMap>
+
+    <resultMap id="customerInfoMap" type="java.util.HashMap">
+        <id column="id" property="id"></id>
+        <result column="cust_no" property="custNo"></result>
+        <result column="cust_name" property="custName"></result>
+        <result column="cust_level" property="custLevel"></result>
+        <result column="group_name" property="groupName"></result>
+    </resultMap>
+
+    <resultMap id="customerInfoMap2" type="spb.crm.domain.Customer">
+        <id column="id" property="id"></id>
+        <result column="cust_no" property="custNo"></result>
+        <result column="cust_name" property="custName"></result>
+        <result column="cust_level" property="custLevel"></result>
+        <collection property="courseList" ofType="spb.crm.domain.Course">
+            <id column="course_id" property="id"/>
+            <id column="course_name" property="name"/>
+        </collection>
+    </resultMap>
+
+    <resultMap id="customerCourseInfoMap" type="java.util.HashMap">
+        <id column="id" property="id"></id>
+        <result column="cust_no" property="custNo"></result>
+        <result column="cust_name" property="custName"></result>
+        <result column="group_name" property="groupName"></result>
+    </resultMap>
+    <resultMap id="custInfoLazyMap" type="spb.crm.domain.Customer">
+        <id column="id" property="id"></id>
+        <result column="cust_no" property="custNo"></result>
+        <result column="cust_name" property="custName"></result>
+        <result column="group_name" property="groupName"></result>
+        <association property="city" javaType="spb.crm.domain.City" column="city_id"
+                     select="findCityById"/>
+    </resultMap>
+
+
+    <sql id="baseSql">
+        select id,cust_no,cust_name,cust_level from customer
+    </sql>
+    <select id="findCityById"  resultType="spb.crm.domain.City">
+        select * from city where id=#{city_id}
+    </select>
+    <select id="searchByName"  resultMap="resultMap">
+        <include refid="baseSql"></include> where cust_name = #{cust_name}
+    </select>
+
+    <select id="searchByNameAndNo"  resultType="spb.crm.domain.Customer">
+        <include refid="baseSql"></include> where cust_name = #{cust_name} and cust_no = #{cust_no}
+    </select>
+
+    <select id="searchCustomer" parameterType="spb.crm.domain.Customer" resultMap="resultMap">
+        <include refid="baseSql"></include> where 1 = 1
+      <if test="custName != null and custName != ''"> and cust_name = #{custName}</if>
+      <if test="custNo != null and custNo != ''"> and cust_no = #{custNo}</if>
+    </select>
+
+    <select id="searchCustomerInfo" parameterType="spb.crm.domain.Customer" resultMap="customerInfoMap">
+        select c.id,c.cust_no,c.cust_name,c.cust_level,g.group_name from customer c,group_info g where c.group_id = g.id
+        <if test="custName != null and custName != ''"> and cust_name = #{custName}</if>
+        <if test="custNo != null and custNo != ''"> and cust_no = #{custNo}</if>
+    </select>
+    <select id="searchCustomerInfo2" parameterType="spb.crm.domain.Customer" resultMap="customerInfoMap2">
+        select c1.id,c1.cust_no,c1.cust_name,c1.cust_level,cc.course_id,c2.name as course_name from customer c1 left join cust_course cc  on c1.id = cc.customer_id left join course c2 on cc.course_id = c2.id
+        <if test="custName != null and custName != ''"> where cust_name = #{custName}</if>
+    </select>
+    <select id="searchCustLazyLoad" parameterType="spb.crm.domain.Customer" resultMap="custInfoLazyMap">
+        select c1.id,c1.cust_no,c1.cust_name,c1.cust_level,c2.id as city_id from customer c1 left join city c2  on c1.city_id = c2.id
+        <if test="custName != null and custName != ''"> where cust_name = #{custName}</if>
+    </select>
+    <select id="searchCustomerCourse" parameterType="spb.crm.domain.Customer" resultMap="customerInfoMap">
+        select c.id,c.cust_no,c.cust_name,c.cust_level,g.group_name from customer c,group_info g where c.group_id = g.id
+        <if test="custName != null and custName != ''"> and cust_name = #{custName}</if>
+        <if test="custNo != null and custNo != ''"> and cust_no = #{custNo}</if>
+    </select>
+
+</mapper>
