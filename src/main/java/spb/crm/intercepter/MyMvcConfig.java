@@ -11,7 +11,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class MyMvcConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new LoginIntercepter()).addPathPatterns("/testIntercepter/testA");
+        registry.addInterceptor(new CorsInterceptor()).addPathPatterns("/**");
+        registry.addInterceptor(new LoginIntercepter())
+                //.addPathPatterns("/customer/**")//拦截的路径
+                .excludePathPatterns("/customer/**")//放行的路径
+                .excludePathPatterns("/customer/login");//放行的路径
+
         registry.addInterceptor(new LoginIntercepterB()).addPathPatterns("/testIntercepter/testA");
         WebMvcConfigurer.super.addInterceptors(registry);
     }

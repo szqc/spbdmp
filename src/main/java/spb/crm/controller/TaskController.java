@@ -1,5 +1,6 @@
 package spb.crm.controller;
 
+import spb.crm.exception.BasicException;
 import spb.crm.task.AsynTask;
 import spb.crm.util.JsonData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,26 @@ public class TaskController {
     @Autowired
     private AsynTask asynTask;
 
+
+
+    @RequestMapping("noBody")
+    public JsonData noBody() {
+        int i = 1/0;
+        return new JsonData(null,"000000",true,null);
+    }
+
+    @RequestMapping("zdyException")
+    public JsonData zdyException() {
+        throw new BasicException("123456","自定义异常提示……");
+    }
+
+    @RequestMapping("nullException")
+    public JsonData nullException() throws BasicException {
+        Integer i = null;
+        int j = i/1;
+        return new JsonData(null,"000000",true,null);
+    }
+
     @RequestMapping("testOne")
     public JsonData test() throws InterruptedException {
         long begin = System.currentTimeMillis();
@@ -25,7 +46,7 @@ public class TaskController {
         asynTask.task3();
         long end = System.currentTimeMillis();
         Map map = new HashMap();
-        return new JsonData(map,true,String.valueOf(end - begin));
+        return new JsonData(map,"000000",true,String.valueOf(end - begin));
     }
 
     @RequestMapping("testTwo")
@@ -42,6 +63,8 @@ public class TaskController {
         System.out.println("===========先打印还是先执行完任务4和任务5=========");
         long end = System.currentTimeMillis();
         Map map = new HashMap();
-        return new JsonData(map,true,String.valueOf(end - begin));
+        return new JsonData(map,"000000",true,String.valueOf(end - begin));
     }
+
+
 }

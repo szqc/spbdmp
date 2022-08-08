@@ -24,7 +24,7 @@ public class LoginFilter implements Filter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
         System.out.println("====111111===进入MyFilter01过滤器========");
 
-        JsonData jsonData = new JsonData(null,false,"没有权限");
+        JsonData jsonData = new JsonData(null,"123000",false,"没有权限");
         writeResp(response,jsonData);
         //chain.doFilter(request,response);
     }

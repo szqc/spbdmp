@@ -50,6 +50,10 @@
     <sql id="baseSql">
         select id,cust_no,cust_name,cust_level from customer
     </sql>
+    <select id="list" resultMap="resultMap">
+        <include refid="baseSql"></include>
+    </select>
+
     <select id="findCityById"  resultType="spb.crm.domain.City">
         select * from city where id=#{city_id}
     </select>
@@ -81,9 +85,11 @@
         <if test="custName != null and custName != ''"> where cust_name = #{custName}</if>
     </select>
     <select id="searchCustomerCourse" parameterType="spb.crm.domain.Customer" resultMap="customerInfoMap">
-        select c.id,c.cust_no,c.cust_name,c.cust_level,g.group_name from customer c,group_info g where c.group_id = g.id
-        <if test="custName != null and custName != ''"> and cust_name = #{custName}</if>
-        <if test="custNo != null and custNo != ''"> and cust_no = #{custNo}</if>
+        select c1.id,c1.cust_no,c1.cust_name,c1.cust_level,cc.course_id,c2.name as course_name from customer c1 left join cust_course cc  on c1.id = cc.customer_id left join course c2 on cc.course_id = c2.id
+        <if test="custName != null and custName != ''"> where cust_name = #{custName}</if>
     </select>
+    <insert id="addCustomer" parameterType="spb.crm.domain.Customer">
+        insert into customer(cust_no,cust_name) value (#{custNo},#{custName})
+    </insert>
 
 </mapper>

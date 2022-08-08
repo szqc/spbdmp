@@ -16,7 +16,7 @@ public class LoginIntercepterB implements HandlerInterceptor {
     private static JsonMapper jsonMapper = new JsonMapper();
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        JsonData jsonData = new JsonData(null,false,"LoginIntercepterB，没有访问权限");
+        JsonData jsonData = new JsonData(null,"123000",false,"LoginIntercepterB，没有访问权限");
         writeResp(response,jsonData);
         return HandlerInterceptor.super.preHandle(request,response,handler);
     }

@@ -13,6 +13,8 @@ public interface CustomerService {
     HashMap searchCustomerInfo(Customer customer);
     List<Customer> searchCustomerInfo2(Customer customer);
     List<Customer> searchCustLazyLoad(Customer customer);
-
+    void addCustomer(Customer customer);
+    void addCustomer2(Customer customer);
+    Customer noBody(String custName);
 
 }

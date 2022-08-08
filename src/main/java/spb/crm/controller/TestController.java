@@ -33,6 +33,6 @@ public class TestController {
             throw   new Exception();
         }
 
-        return new JsonData(map,true,"");
+        return new JsonData(map,"000000",true,"");
     }
 }

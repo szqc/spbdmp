@@ -1,9 +1,13 @@
 package spb.crm.intercepter;
 
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import org.springframework.util.StringUtils;
 import spb.crm.util.JsonData;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
+import spb.crm.util.JwtUtils;
 
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -13,12 +17,29 @@ import java.io.PrintWriter;
 
 public class LoginIntercepter implements HandlerInterceptor {
     private static JsonMapper jsonMapper = new JsonMapper();
-
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        JsonData jsonData = new JsonData(null,false,"拦截器，没有访问权限");
-        writeResp(response,jsonData);
-        return true;
+        try{
+            String token = request.getHeader("token");
+            if(token == null){
+                token = request.getParameter("token");
+            }
+            if(!StringUtils.isEmpty(token)){
+                Claims claims = JwtUtils.checkJWT(token);
+                if(claims == null){
+                    //需要重新登录
+                    JsonData jsonData = new JsonData(null,"123000",false,"拦截器，请重新登录");
+                    writeResp(response,jsonData);//实际项目中是跳转到登录界面，如果前后端分离的，后端返回jsonjson提示前端根据提示自行控制跳转到登录界面
+                    return false;
+                }
+                String name = (String)claims.get("name");
+                request.setAttribute("customerName",name);
+                return true;
+            }
+        }catch (Exception e){}
+        JsonData jsonData = new JsonData(null,"123000",false,"拦截器，请重新登录");
+        writeResp(response,jsonData);//实际项目中是跳转到登录界面，如果前后端分离的，后端返回jsonjson提示前端根据提示自行控制跳转到登录界面
+        return false;
     }
 
     @Override

@@ -2,10 +2,13 @@ package spb.crm.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import spb.crm.exception.BasicException;
 import spb.crm.mapper.CustomerMapper;
 import spb.crm.domain.Customer;
 import spb.crm.service.CustomerService;
+import spb.crm.util.JwtUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -16,6 +19,15 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Autowired
     private CustomerMapper customerMapper;
+    @Autowired
+    private CustomerService customerService;
+
+    @Override
+    public Customer noBody(String custName) {
+        throw  new BasicException("111111","找不到相关记录");
+    }
+
+
 
     @Override
     public List<Customer> searchByName(String custName) {
@@ -48,4 +60,24 @@ public class CustomerServiceImpl implements CustomerService {
         customerMapper.searchCustLazyLoad(customer);
         return customerMapper.searchCustLazyLoad(customer);
     }
+
+    @Transactional(propagation = Propagation.REQUIRED)
+    @Override
+    public void addCustomer(Customer customer) {
+
+        customerMapper.addCustomer(customer);
+        customer.setCustNo(customer.getCustName());
+        customerService.addCustomer2(customer);
+        int i = 1 / 0;
+
+    }
+    @Transactional(propagation = Propagation.MANDATORY)
+    @Override
+    public void addCustomer2(Customer customer) {
+
+        customerMapper.addCustomer(customer);
+
+    }
+
+
 }
